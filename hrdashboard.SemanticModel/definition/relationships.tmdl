@@ -1,0 +1,40 @@
+relationship 4ab47458-200d-13bb-cb9c-63154570ca90
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: employees.EmpID
+	toColumn: employee_fact.EmpID
+
+relationship 3d4b74e2-ff40-1beb-44f3-b4a760ff8303
+	fromColumn: employee_fact.ManagerID
+	toColumn: managers.ManagerID
+
+relationship 7eb83752-3a3e-dd6b-17ac-3622815a424a
+	fromColumn: employee_fact.DeptID
+	toColumn: departments.DeptID
+
+relationship f805e63e-649f-a30f-022e-156c11d23781
+	fromColumn: employee_fact.PositionID
+	toColumn: positions.PositionID
+
+relationship 415bbb20-966d-5030-be0c-47e8dd8d1e9e
+	isActive: false
+	fromColumn: employees.DateofHire
+	toColumn: DateTable.Date
+
+relationship 1996d477-a1e1-ed74-01be-545ce6ba949d
+	isActive: false
+	fromColumn: employees.DateofTermination
+	toColumn: DateTable.Date
+
+relationship b49c5db6-dfaa-a28e-fdd8-77c2e0247767
+	crossFilteringBehavior: bothDirections
+	toCardinality: many
+	fromColumn: employees.DepartmentID
+	toColumn: DepartmentsEmployees.DepartmentID
+
+relationship 924e22c6-20b1-7b4b-fa7f-c79819beadde
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: employees.EmpID
+	toColumn: Photos.ID_upd
+

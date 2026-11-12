@@ -1,0 +1,28 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_QueryOrder = ["SourceFolder","departments","employee_fact","employees","managers","positions","_DAX_measures","Photos"]
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_ProTooling = ["DevMode","MCP-PBIModeling"]
+
+ref table departments
+ref table employee_fact
+ref table employees
+ref table managers
+ref table positions
+ref table DateTable
+ref table _DAX_measures
+ref table 'Rates years  window'
+ref table DepartmentsEmployees
+ref table _selectorPage1
+ref table Photos
+
+ref cultureInfo en-US
+

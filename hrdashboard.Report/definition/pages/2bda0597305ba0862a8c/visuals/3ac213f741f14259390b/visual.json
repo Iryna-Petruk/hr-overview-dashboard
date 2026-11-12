@@ -1,0 +1,16 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "3ac213f741f14259390b",
+  "position": {
+    "x": 364.43131462333827,
+    "y": 233.97341211225998,
+    "z": 19000,
+    "height": 41.122599704579024,
+    "width": 212.70310192023635,
+    "tabOrder": 20000
+  },
+  "visualGroup": {
+    "displayName": "Year/performance buttons",
+    "groupMode": "ScaleMode"
+  }
+}

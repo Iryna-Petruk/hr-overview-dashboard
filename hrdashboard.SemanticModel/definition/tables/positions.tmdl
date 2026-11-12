@@ -1,0 +1,62 @@
+/// Job position dimension, one row per position. Twenty-nine positions after the duplicate IDs and titles in the source file are consolidated.
+table positions
+	lineageTag: 88789bdb-89a4-4e59-8277-536df4554653
+
+	/// Job title. Used by the position bar chart on the Overview page and as the drill level under department on the HR Metrics page.
+	column Position
+		dataType: string
+		lineageTag: 51729a36-1bd6-476f-9fed-1636974341eb
+		summarizeBy: none
+		sourceColumn: Position
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Position key. Joins to employee_fact[PositionID]. Hidden because it is plumbing rather than something to report on.
+	column PositionID
+		dataType: int64
+		isHidden
+		isKey
+		formatString: 0
+		isAvailableInMdx: false
+		lineageTag: 7a94cc24-dc17-448a-93c5-b3f7af2c9154
+		summarizeBy: none
+		sourceColumn: PositionID
+
+		annotation SummarizationSetBy = Automatic
+
+	partition positions = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(SourceFolder & "\positions.csv"),[Delimiter=",", Columns=2, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"PositionID", Int64.Type}, {"Position", type text}}),
+				    #"Sorted Rows" = Table.Sort(#"Changed Type",{{"PositionID", Order.Ascending}}),
+				    #"Trimmed Text" = Table.TransformColumns(#"Sorted Rows",{{"Position", Text.Trim, type text}}),
+				    #"Cleaned Text" = Table.TransformColumns(#"Trimmed Text",{{"Position", Text.Clean, type text}}),
+				    #"Removed Duplicates" = Table.Distinct(#"Cleaned Text"),
+				    // PositionID 13 appears three times with three different titles, IT Manager - Support,
+				    // IT Manager - Infra and IT Manager - DB. Collapse all three to one title so that the
+				    // dedupe below leaves a single row for position 13.
+				    #"Added Custom" = Table.AddColumn(#"Removed Duplicates", "Position_adj", each if [PositionID] = 13 then "IT Manager" else [Position]),
+				    // PositionID 17 and 18 are both titled Production Manager. Fold 17 into 18, which is
+				    // the ID employee_fact uses most. The same replacement is applied to employee_fact.
+				    #"Replaced Value" = Table.ReplaceValue(#"Added Custom",17,18,Replacer.ReplaceValue,{"PositionID"}),
+				    // PositionID 23 is used for two unrelated titles, Shared Services Manager and
+				    // Software Engineer, while 24 is already Software Engineer. Move the Software
+				    // Engineer rows onto 24 and leave 23 to Shared Services Manager.
+				    #"Added Custom1" = Table.AddColumn(#"Replaced Value", "PositionID_adj", each if [Position] = "Software Engineer" then 24 else [PositionID]),
+				    #"Removed Columns" = Table.RemoveColumns(#"Added Custom1",{"PositionID", "Position"}),
+				    #"Removed Duplicates1" = Table.Distinct(#"Removed Columns"),
+				    #"Renamed Columns" = Table.RenameColumns(#"Removed Duplicates1",{{"PositionID_adj", "PositionID"}, {"Position_adj", "Position"}}),
+				    // Table.AddColumn leaves the rebuilt PositionID untyped, which made the model store
+				    // it as text while employee_fact[PositionID] is a number. Cast it back so the
+				    // relationship joins two columns of the same data type.
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Renamed Columns",{{"PositionID", Int64.Type}})
+				in
+				    #"Changed Type1"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

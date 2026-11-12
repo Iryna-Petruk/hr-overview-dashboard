@@ -1,0 +1,84 @@
+/// Date dimension, 1 January 2006 to 31 December 2018, covering every year that has hires or terminations. Marked as the model date table. It has no active relationship to employees, so the hiring, leaver and salary measures switch on the hire date or termination date relationship with USERELATIONSHIP.
+table DateTable
+	lineageTag: 0e03123a-62bf-48c3-aa3b-f2a9ac454501
+	dataCategory: Time
+
+	/// Calendar date, one row per day. The key of the date table.
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: dd/mm/yyyy
+		lineageTag: b4a3f17a-87a4-416d-8dcd-a2002d1e3b14
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Date]
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	/// Calendar year as a whole number, for example 2018. The first level of the date axis on every trend chart.
+	column Year
+		formatString: 0
+		lineageTag: 3c1f6a84-7d52-4e91-ab03-5f7c2e4d8b16
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Year]
+
+		annotation SummarizationSetBy = User
+
+	/// Calendar quarter as Q1 to Q4.
+	column Quarter
+		lineageTag: 9a4e2db7-16c8-4f30-8e5a-c27b91f6d403
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Quarter]
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Month number from 1 to 12. Sorts Month Name and is the second level of the date axis on the HR Metrics page.
+	column 'Month No'
+		formatString: 0
+		lineageTag: 5d83c0fe-42a1-4b67-9c18-7ae35b2f9d84
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Month No]
+
+		annotation SummarizationSetBy = User
+
+	/// Month name in full, for example January. Sorted by Month No so it reads in calendar order.
+	column 'Month Name'
+		lineageTag: e7f21b96-8c40-4d5e-b23a-41d6098fc572
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Month Name]
+		sortByColumn: 'Month No'
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Year and month as yyyy-MM, for example 2018-07. Sorts correctly as text, so it needs no separate sort column.
+	column 'Year Month'
+		lineageTag: b16d7a4f-0e93-4a27-85cd-3f80b7e261a9
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Year Month]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DateTable = calculated
+		mode: import
+		source =
+				
+				ADDCOLUMNS(
+				    CALENDAR(DATE(2006, 1, 1), DATE(2018, 12, 31)),
+				    "Year", YEAR([Date]),
+				    "Quarter", "Q" & QUARTER([Date]),
+				    "Month No", MONTH([Date]),
+				    "Month Name", FORMAT([Date], "MMMM"),
+				    "Year Month", FORMAT([Date], "yyyy-MM")
+				)
+
+	annotation PBI_Id = 5c248a0d84cc4a19914950d9e00d856c
+
+	annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["REDUCE_USAGE_OF_CALCULATED_TABLES"]}
+

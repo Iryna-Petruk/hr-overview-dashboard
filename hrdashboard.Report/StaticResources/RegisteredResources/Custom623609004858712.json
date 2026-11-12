@@ -1,0 +1,23 @@
+{
+  "name": "Custom",
+  "textClasses": {
+    "callout": {
+      "fontFace": "'Segoe UI Light', wf_segoe-ui_light, helvetica, arial, sans-serif",
+      "fontSize": 14
+    },
+    "title": {
+      "fontFace": "'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif",
+      "fontSize": 24
+    }
+  },
+  "dataColors": [
+    "#222725",
+    "#899878",
+    "#E4E6C3",
+    "#CCCCCC",
+    "#000000",
+    "#605E5C",
+    "#E6E6E6",
+    "#FFFFFF"
+  ]
+}

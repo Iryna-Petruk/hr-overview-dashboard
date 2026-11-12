@@ -1,0 +1,6 @@
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
+
+# The PBIP folders are the source of truth. The .pbix is the same model
+# and report in binary form, so committing it would duplicate everything.
+*.pbix

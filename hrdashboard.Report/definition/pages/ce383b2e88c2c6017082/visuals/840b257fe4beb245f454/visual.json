@@ -1,0 +1,16 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "840b257fe4beb245f454",
+  "position": {
+    "x": 1548.4785819793206,
+    "y": 243.89955686853767,
+    "z": 21000,
+    "height": 41.122599704579024,
+    "width": 211.28508124076811,
+    "tabOrder": 18000
+  },
+  "visualGroup": {
+    "displayName": "Position/years buttons",
+    "groupMode": "ScaleMode"
+  }
+}

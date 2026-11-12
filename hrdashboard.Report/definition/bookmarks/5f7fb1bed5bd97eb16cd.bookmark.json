@@ -1,0 +1,1428 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/bookmark/2.1.0/schema.json",
+  "displayName": "Department",
+  "name": "5f7fb1bed5bd97eb16cd",
+  "options": {
+    "applyOnlyToTargetVisuals": true,
+    "targetVisualNames": [
+      "7f3ef15d5010ea9274b6",
+      "d67b17d330083a234582",
+      "43454c90f229bb24b8c3",
+      "0beaac0354b605a55727",
+      "c2c61a3ec8690862b262",
+      "876a44164b037655d987"
+    ],
+    "suppressData": true
+  },
+  "explorationState": {
+    "version": "1.3",
+    "activeSection": "2bda0597305ba0862a8c",
+    "filters": {
+      "byExpr": [
+        {
+          "name": "Filter71b79d6047e68a6c8bcc",
+          "type": "Categorical",
+          "filter": {
+            "Version": 2,
+            "From": [
+              {
+                "Name": "p",
+                "Entity": "positions",
+                "Type": 0
+              }
+            ],
+            "Where": [
+              {
+                "Condition": {
+                  "Not": {
+                    "Expression": {
+                      "In": {
+                        "Expressions": [
+                          {
+                            "Column": {
+                              "Expression": {
+                                "SourceRef": {
+                                  "Source": "p"
+                                }
+                              },
+                              "Property": "Position"
+                            }
+                          }
+                        ],
+                        "Values": [
+                          [
+                            {
+                              "Literal": {
+                                "Value": "'President & CEO'"
+                              }
+                            }
+                          ]
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "expression": {
+            "Column": {
+              "Expression": {
+                "SourceRef": {
+                  "Entity": "positions"
+                }
+              },
+              "Property": "Position"
+            }
+          },
+          "howCreated": 1
+        },
+        {
+          "name": "d512615a5eac607a0654",
+          "type": "Categorical",
+          "filter": {
+            "Version": 2,
+            "From": [
+              {
+                "Name": "l",
+                "Entity": "DateTable",
+                "Type": 0
+              }
+            ],
+            "Where": [
+              {
+                "Condition": {
+                  "Not": {
+                    "Expression": {
+                      "In": {
+                        "Expressions": [
+                          {
+                            "Column": {
+                              "Expression": {
+                                "SourceRef": {
+                                  "Source": "l"
+                                }
+                              },
+                              "Property": "Year"
+                            }
+                          }
+                        ],
+                        "Values": [
+                          [
+                            {
+                              "Literal": {
+                                "Value": "null"
+                              }
+                            }
+                          ]
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "expression": {
+            "Column": {
+              "Expression": {
+                "SourceRef": {
+                  "Entity": "DateTable"
+                }
+              },
+              "Property": "Year"
+            }
+          },
+          "howCreated": 1,
+          "cachedDisplayNames": [
+            {
+              "id": {
+                "scopeId": {
+                  "Comparison": {
+                    "ComparisonKind": 0,
+                    "Left": {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Entity": "DateTable"
+                          }
+                        },
+                        "Property": "Year"
+                      }
+                    },
+                    "Right": {
+                      "Literal": {
+                        "Value": "null"
+                      }
+                    }
+                  }
+                }
+              },
+              "displayName": "(Blank)"
+            }
+          ]
+        }
+      ]
+    },
+    "sections": {
+      "2bda0597305ba0862a8c": {
+        "visualContainers": {
+          "c1a9013421659ab92d71": {
+            "singleVisual": {
+              "visualType": "textbox",
+              "objects": {}
+            }
+          },
+          "88f1f3e90aced347e868": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "9ace6076a0b431c5be1c",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_DAX_measures"
+                        }
+                      },
+                      "Property": "SalaryMIN"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "card",
+              "objects": {},
+              "orderBy": [
+                {
+                  "Direction": 2,
+                  "Expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_DAX_measures"
+                        }
+                      },
+                      "Property": "SalaryMIN"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "5a1d05b580c46b850189": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "272c582ae02412066420",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_DAX_measures"
+                        }
+                      },
+                      "Property": "SalaryPERC25"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "card",
+              "objects": {},
+              "orderBy": [
+                {
+                  "Direction": 2,
+                  "Expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_DAX_measures"
+                        }
+                      },
+                      "Property": "SalaryPERC25"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "3ce47c748bd687ce030f": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "5306936a170b4dddc945",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_DAX_measures"
+                        }
+                      },
+                      "Property": "SalaryMEDIAN"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "card",
+              "objects": {},
+              "orderBy": [
+                {
+                  "Direction": 2,
+                  "Expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_DAX_measures"
+                        }
+                      },
+                      "Property": "SalaryMEDIAN"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "413ab9afb0618147363e": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "413b6e344e43827249b0",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_DAX_measures"
+                        }
+                      },
+                      "Property": "SalaryAVG"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "card",
+              "objects": {},
+              "orderBy": [
+                {
+                  "Direction": 2,
+                  "Expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_DAX_measures"
+                        }
+                      },
+                      "Property": "SalaryAVG"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "2e798ed7e4a8b4494697": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "233c138e0ac9e59db5d8",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_DAX_measures"
+                        }
+                      },
+                      "Property": "SalaryPERC75"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "card",
+              "objects": {},
+              "orderBy": [
+                {
+                  "Direction": 2,
+                  "Expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_DAX_measures"
+                        }
+                      },
+                      "Property": "SalaryPERC75"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "b4a04e730bd75258312f": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "d7c23bbb17910791e33d",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_DAX_measures"
+                        }
+                      },
+                      "Property": "SalaryMAX"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "card",
+              "objects": {},
+              "orderBy": [
+                {
+                  "Direction": 2,
+                  "Expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_DAX_measures"
+                        }
+                      },
+                      "Property": "SalaryMAX"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "475aa24f550cd92fa7bb": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "fe2bf230c83768037a4d",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_DAX_measures"
+                        }
+                      },
+                      "Property": "SalaryMAX"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "fc29af9e6960ab77c555",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_DAX_measures"
+                        }
+                      },
+                      "Property": "SalaryMEDIAN"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "3eefa882290841e6b4dc",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_DAX_measures"
+                        }
+                      },
+                      "Property": "SalaryMIN"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "b76c3b40ab66065bccaa",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "employee_fact"
+                        }
+                      },
+                      "Property": "PerformanceScore"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "ab5ea053e9ba7c0402b4",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_DAX_measures"
+                        }
+                      },
+                      "Property": "SalaryPERC25"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "0e5de33e9a8e1a213ae0",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_DAX_measures"
+                        }
+                      },
+                      "Property": "Salary50-25"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "f643c0e76ad2adc55927",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_DAX_measures"
+                        }
+                      },
+                      "Property": "SalaryAVG"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "95861d132c96c1231ba7",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_DAX_measures"
+                        }
+                      },
+                      "Property": "Salary75-50"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "lineStackedColumnComboChart",
+              "objects": {},
+              "orderBy": [
+                {
+                  "Direction": 2,
+                  "Expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_DAX_measures"
+                        }
+                      },
+                      "Property": "SalaryPERC25"
+                    }
+                  }
+                }
+              ],
+              "activeProjections": {
+                "Category": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "employee_fact"
+                        }
+                      },
+                      "Property": "PerformanceScore"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "43454c90f229bb24b8c3": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "20593e8c0520650b1ed1",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_DAX_measures"
+                        }
+                      },
+                      "Property": "SalaryAVG"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "df32ce44483a707092b5",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "departments"
+                        }
+                      },
+                      "Property": "Department"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "donutChart",
+              "objects": {},
+              "orderBy": [
+                {
+                  "Direction": 2,
+                  "Expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_DAX_measures"
+                        }
+                      },
+                      "Property": "SalaryAVG"
+                    }
+                  }
+                }
+              ],
+              "activeProjections": {
+                "Category": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "departments"
+                        }
+                      },
+                      "Property": "Department"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "876a44164b037655d987": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "ccdfb65452e387ac9144",
+                  "type": "Advanced",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "employee_fact"
+                        }
+                      },
+                      "Property": "EmpSatisfaction"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "0191f46069838e0d1479",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_DAX_measures"
+                        }
+                      },
+                      "Property": "SalaryAVG"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "c479caf5089bb45cb3c3",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "employees"
+                        }
+                      },
+                      "Property": "EmploymentStatus"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "lineChart",
+              "objects": {},
+              "orderBy": [
+                {
+                  "Direction": 2,
+                  "Expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_DAX_measures"
+                        }
+                      },
+                      "Property": "SalaryAVG"
+                    }
+                  }
+                }
+              ],
+              "activeProjections": {
+                "Category": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "employee_fact"
+                        }
+                      },
+                      "Property": "EmpSatisfaction"
+                    }
+                  }
+                ]
+              },
+              "display": {
+                "mode": "hidden"
+              }
+            }
+          },
+          "12075978f55b8fe6ac0b": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "650bd6abee5a3e7ec3bd",
+                  "type": "Advanced",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "employees"
+                        }
+                      },
+                      "Property": "Age"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "5811417393c994edab27",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_DAX_measures"
+                        }
+                      },
+                      "Property": "EmployeeCountAll"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "31d61d6be325d8e03cc5",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_DAX_measures"
+                        }
+                      },
+                      "Property": "SalaryMAX"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "22d9f3c204813673e2d1",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_DAX_measures"
+                        }
+                      },
+                      "Property": "SalaryMEDIAN"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "803f2ba289c1d1a85e90",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_DAX_measures"
+                        }
+                      },
+                      "Property": "SalaryMIN"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "lineStackedColumnComboChart",
+              "objects": {},
+              "orderBy": [
+                {
+                  "Direction": 2,
+                  "Expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_DAX_measures"
+                        }
+                      },
+                      "Property": "EmployeeCountAll"
+                    }
+                  }
+                }
+              ],
+              "activeProjections": {
+                "Category": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "employees"
+                        }
+                      },
+                      "Property": "Age"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "d89fb15560a01318bb62": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "9ecba0c894ad63977703",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_DAX_measures"
+                        }
+                      },
+                      "Property": "EmployeeAge"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "1652d3c706855e9e4285",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "employees"
+                        }
+                      },
+                      "Property": "Employee_Name"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "8ef29b8bb946115e2c89",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "departments"
+                        }
+                      },
+                      "Property": "Department"
+                    }
+                  },
+                  "howCreated": 0
+                },
+                {
+                  "name": "4d577ebc00b0b84b57a6",
+                  "type": "Advanced",
+                  "expression": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "_DAX_measures"
+                        }
+                      },
+                      "Property": "SalaryAVG"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "tableEx",
+              "objects": {}
+            }
+          },
+          "2a7057d740ec9573b887": {
+            "singleVisual": {
+              "visualType": "shape",
+              "objects": {}
+            }
+          },
+          "a18783d2fc455e5d4c27": {
+            "singleVisual": {
+              "visualType": "shape",
+              "objects": {}
+            }
+          },
+          "26872c1dd64c737dabe6": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "85045a0012d6d07a04de",
+                  "type": "Advanced",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "employees"
+                        }
+                      },
+                      "Property": "Age"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "slicer",
+              "objects": {
+                "merge": {
+                  "data": [
+                    {
+                      "properties": {
+                        "mode": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "'Between'"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "activeProjections": {
+                "Values": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "employees"
+                        }
+                      },
+                      "Property": "Age"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "db8ce35a57a3d1f8fa39": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "310314593944abbe950b",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "employees"
+                        }
+                      },
+                      "Property": "Sex"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "slicer",
+              "objects": {
+                "merge": {
+                  "data": [
+                    {
+                      "properties": {
+                        "mode": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "'Dropdown'"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "activeProjections": {
+                "Values": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "employees"
+                        }
+                      },
+                      "Property": "Sex"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "9546eae0ecb2888d0c3d": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "c83541f8502032242799",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "employees"
+                        }
+                      },
+                      "Property": "MaritalDesc"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "slicer",
+              "objects": {
+                "merge": {
+                  "data": [
+                    {
+                      "properties": {
+                        "mode": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "'Dropdown'"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "activeProjections": {
+                "Values": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "employees"
+                        }
+                      },
+                      "Property": "MaritalDesc"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "167d1cf64aaa14670cc2": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "9fb3c0a50c83151dcdbe",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "employees"
+                        }
+                      },
+                      "Property": "RaceDesc"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "slicer",
+              "objects": {
+                "merge": {
+                  "data": [
+                    {
+                      "properties": {
+                        "mode": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "'Dropdown'"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "activeProjections": {
+                "Values": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "employees"
+                        }
+                      },
+                      "Property": "RaceDesc"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "82222726b349c260ddbb": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "094b8d9bc39043cd3640",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "departments"
+                        }
+                      },
+                      "Property": "Department"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "slicer",
+              "objects": {
+                "merge": {
+                  "data": [
+                    {
+                      "properties": {
+                        "mode": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "'Dropdown'"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "activeProjections": {
+                "Values": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "departments"
+                        }
+                      },
+                      "Property": "Department"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "6345aeb9f1c4e367d36b": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "ab8ae080ea5ad82635d0",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "managers"
+                        }
+                      },
+                      "Property": "ManagerName"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "slicer",
+              "objects": {
+                "merge": {
+                  "data": [
+                    {
+                      "properties": {
+                        "mode": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "'Dropdown'"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "activeProjections": {
+                "Values": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "managers"
+                        }
+                      },
+                      "Property": "ManagerName"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "a1c18508c8bf64d0e428": {
+            "filters": {
+              "byExpr": [
+                {
+                  "name": "1da0fcf02ac0359d95e9",
+                  "type": "Categorical",
+                  "expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "employees"
+                        }
+                      },
+                      "Property": "RecruitmentSource"
+                    }
+                  },
+                  "howCreated": 0
+                }
+              ]
+            },
+            "singleVisual": {
+              "visualType": "slicer",
+              "objects": {
+                "merge": {
+                  "data": [
+                    {
+                      "properties": {
+                        "mode": {
+                          "expr": {
+                            "Literal": {
+                              "Value": "'Dropdown'"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "activeProjections": {
+                "Values": [
+                  {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "employees"
+                        }
+                      },
+                      "Property": "RecruitmentSource"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "e01e70c8694a867161f5": {
+            "singleVisual": {
+              "visualType": "actionButton",
+              "objects": {}
+            }
+          },
+          "b203ca16240465da1013": {
+            "singleVisual": {
+              "visualType": "shape",
+              "objects": {}
+            }
+          },
+          "4af9bd6e2ad0bafe8328": {
+            "singleVisual": {
+              "visualType": "shape",
+              "objects": {}
+            }
+          },
+          "198d5ca13d4f51384140": {
+            "singleVisual": {
+              "visualType": "shape",
+              "objects": {}
+            }
+          },
+          "64cd765cae1981851933": {
+            "singleVisual": {
+              "visualType": "actionButton",
+              "objects": {}
+            }
+          },
+          "24b09baea5fc03d2218e": {
+            "singleVisual": {
+              "visualType": "actionButton",
+              "objects": {}
+            }
+          },
+          "bf4b00e9d611ff2eacba": {
+            "singleVisual": {
+              "visualType": "actionButton",
+              "objects": {}
+            }
+          },
+          "9e0c9c95ddaec34cf741": {
+            "singleVisual": {
+              "visualType": "actionButton",
+              "objects": {}
+            }
+          },
+          "707f730ec0cb32c7fa95": {
+            "singleVisual": {
+              "visualType": "image",
+              "objects": {}
+            }
+          },
+          "d8daff5f055b34e01a45": {
+            "singleVisual": {
+              "visualType": "shape",
+              "objects": {}
+            }
+          },
+          "0beaac0354b605a55727": {
+            "singleVisual": {
+              "visualType": "actionButton",
+              "objects": {},
+              "display": {
+                "mode": "hidden"
+              }
+            }
+          },
+          "7f3ef15d5010ea9274b6": {
+            "singleVisual": {
+              "visualType": "actionButton",
+              "objects": {}
+            }
+          },
+          "d67b17d330083a234582": {
+            "singleVisual": {
+              "visualType": "actionButton",
+              "objects": {}
+            }
+          },
+          "c2c61a3ec8690862b262": {
+            "singleVisual": {
+              "visualType": "actionButton",
+              "objects": {},
+              "display": {
+                "mode": "hidden"
+              }
+            }
+          }
+        },
+        "visualContainerGroups": {
+          "c9eab9c798fb51e45ac6": {
+            "isHidden": true
+          }
+        }
+      }
+    },
+    "objects": {
+      "merge": {
+        "outspacePane": [
+          {
+            "properties": {
+              "expanded": {
+                "expr": {
+                  "Literal": {
+                    "Value": "false"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

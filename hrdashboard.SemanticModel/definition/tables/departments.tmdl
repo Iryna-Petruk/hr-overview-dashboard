@@ -1,0 +1,57 @@
+/// Department dimension, one row per department. Six departments after the duplicate DeptID values in the source file are consolidated.
+table departments
+	lineageTag: be36ddd3-c91e-4cf1-ada9-5064134ccf69
+
+	/// Department name. Used by the department slicer and by the department breakdowns on every page.
+	column Department
+		dataType: string
+		lineageTag: 91fd0d23-9f84-4211-953b-e19599cf235b
+		summarizeBy: none
+		sourceColumn: Department
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Department key. Joins to employee_fact[DeptID]. Hidden because it is plumbing rather than something to report on.
+	column DeptID
+		dataType: int64
+		isHidden
+		isKey
+		formatString: 0
+		isAvailableInMdx: false
+		lineageTag: 57d57b10-b221-4abc-ae08-7613fe6ae24a
+		summarizeBy: none
+		sourceColumn: DeptID
+
+		annotation SummarizationSetBy = Automatic
+
+	partition departments = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(SourceFolder & "\departments.csv"),[Delimiter=",", Columns=2, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"DeptID", Int64.Type}, {"Department", type text}}),
+				    #"Trimmed Text" = Table.TransformColumns(#"Changed Type",{{"Department", Text.Trim, type text}}),
+				    #"Cleaned Text" = Table.TransformColumns(#"Trimmed Text",{{"Department", Text.Clean, type text}}),
+				    #"Sorted Rows" = Table.Sort(#"Cleaned Text",{{"DeptID", Order.Ascending}}),
+				    // departments.csv gives the same department name two different DeptID values.
+				    // 1 and 4 are both "Software Engineering", 5 and 6 are both "Production".
+				    // Canonicalise each name onto one ID (Software Engineering to 4, Production to 5)
+				    // so the 8 source rows dedupe to 6 real departments and employee_fact[DeptID]
+				    // joins to exactly one row.
+				    #"Added Custom" = Table.AddColumn(#"Sorted Rows", "Custom", each if [Department] = "Software Engineering" then 4 else if [Department] = "Production" then 5 else [DeptID]),
+				    #"Sorted Rows1" = Table.Sort(#"Added Custom",{{"Custom", Order.Ascending}}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Sorted Rows1",{"DeptID"}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Removed Columns",{{"Custom", "DeptID"}}),
+				    #"Removed Duplicates" = Table.Distinct(#"Renamed Columns"),
+				    // Table.AddColumn leaves the rebuilt DeptID untyped, which made the model store it
+				    // as text while employee_fact[DeptID] is a whole number. Cast it back so the
+				    // relationship joins two columns of the same data type.
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Removed Duplicates",{{"DeptID", Int64.Type}})
+				in
+				    #"Changed Type1"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

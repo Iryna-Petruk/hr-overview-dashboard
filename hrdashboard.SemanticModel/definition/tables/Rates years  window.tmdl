@@ -1,0 +1,31 @@
+/// What if parameter holding the whole numbers 0 to 10. Feeds the Years to look back on slicer on the HR Metrics page, which sets the window for the turnover, attrition and retention rates. Holds no data of its own and needs no relationship.
+table 'Rates years  window'
+	lineageTag: 9e87fd87-9a49-4810-8476-a27ec4280680
+
+	/// The number of years chosen in the Years to look back on slicer. Blank when nothing is selected, which makes the last N years cards blank. The slicer carries a saved default of 3.
+	measure 'Rates years  window Value' = SELECTEDVALUE('Rates years  window'[Rates years  window])
+		formatString: #,0
+		lineageTag: 17b4750f-740a-4f9a-838b-36a1ee053100
+
+	/// Number of years to look back on, 0 to 10.
+	column 'Rates years  window'
+		formatString: 0
+		lineageTag: 59adddb5-404f-4e9d-9c02-4e9fa137497a
+		summarizeBy: none
+		sourceColumn: [Value]
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 0
+				}
+
+		annotation SummarizationSetBy = User
+
+	partition 'Rates years  window' = calculated
+		mode: import
+		source = GENERATESERIES(0, 10, 1)
+
+	annotation PBI_Id = 92e1100361994b69abf7f04986220a48
+
+	annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["REDUCE_USAGE_OF_CALCULATED_TABLES","ENSURE_TABLES_HAVE_RELATIONSHIPS"]}
+

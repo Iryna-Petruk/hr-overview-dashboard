@@ -1,0 +1,16 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "3765c215913d97bb9fef",
+  "displayName": "Employees Breakdown",
+  "displayOption": "FitToPage",
+  "height": 1080,
+  "width": 1920,
+  "visibility": "HiddenInViewMode",
+  "visualInteractions": [
+    {
+      "source": "210d74d22cce1e1b8776",
+      "target": "6076f3c5709040ce102a",
+      "type": "NoFilter"
+    }
+  ]
+}

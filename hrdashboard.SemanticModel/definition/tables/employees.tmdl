@@ -1,0 +1,239 @@
+/// Employee dimension, one row per person, 311 in total. Holds who the employee is, when they joined and left, and how they were recruited. Fictional training data.
+table employees
+	lineageTag: 87bed9a9-fd7e-4a22-8b08-a38381d3cd84
+
+	/// Employee full name, in Surname, Firstname form. Drives the name selector on the Employees Breakdown page.
+	column Employee_Name
+		dataType: string
+		lineageTag: 98a9304b-526f-4a09-9979-3ab928baf1f7
+		summarizeBy: none
+		sourceColumn: Employee_Name
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Employee key. Joins to employee_fact[EmpID] and to Photos[ID_upd]. Hidden because it is plumbing rather than something to report on.
+	column EmpID
+		dataType: int64
+		isHidden
+		formatString: 0
+		isAvailableInMdx: false
+		lineageTag: a878dafc-85d3-479c-ac42-c98b4205c9e6
+		summarizeBy: none
+		sourceColumn: EmpID
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Employee sex as recorded in the source data, M or F.
+	column Sex
+		dataType: string
+		lineageTag: cc91f625-6cf5-4805-8ab1-b661f629d8bc
+		summarizeBy: none
+		sourceColumn: Sex
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Marital status description, for example Single, Married or Divorced.
+	column MaritalDesc
+		dataType: string
+		lineageTag: 3e951690-0f46-4204-a3a8-47ee08de2396
+		summarizeBy: none
+		sourceColumn: MaritalDesc
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Citizenship description, for example US Citizen or Eligible NonCitizen.
+	column CitizenDesc
+		dataType: string
+		lineageTag: e46d40bb-4183-476d-b6be-0df779a93aee
+		summarizeBy: none
+		sourceColumn: CitizenDesc
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Race or ethnicity description. Used by the ethnicity breakdown on the Overview page.
+	column RaceDesc
+		dataType: string
+		lineageTag: 3b920cf2-3cf6-4591-ad35-fe4a3250c1d9
+		summarizeBy: none
+		sourceColumn: RaceDesc
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Date of birth. The basis of the Age column.
+	column DOB
+		dataType: dateTime
+		formatString: d mmmm\, yyyy
+		lineageTag: edb966b2-fc51-4b88-9520-9eff46675971
+		summarizeBy: none
+		sourceColumn: DOB
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	/// Date the employee joined. Joins to DateTable[Date] through an inactive relationship that the hiring and salary measures switch on with USERELATIONSHIP. Hidden so report authors slice on DateTable instead.
+	column DateofHire
+		dataType: dateTime
+		isHidden
+		formatString: d mmmm\, yyyy
+		isAvailableInMdx: false
+		lineageTag: 2b85e4e2-c9ed-4f43-8c7d-c572211e0493
+		summarizeBy: none
+		sourceColumn: DateofHire
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	/// Date the employee left, blank if still employed. Joins to DateTable[Date] through an inactive relationship that the leaver measures switch on with USERELATIONSHIP. Hidden so report authors slice on DateTable instead.
+	column DateofTermination
+		dataType: dateTime
+		isHidden
+		formatString: Long Date
+		isAvailableInMdx: false
+		lineageTag: d4c4ac2a-2878-4833-8c24-092b2148b469
+		summarizeBy: none
+		sourceColumn: DateofTermination
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Stated reason for leaving, or N/A - has not started for people still employed.
+	column TermReason
+		dataType: string
+		lineageTag: 7c0fc120-7ba1-48ca-b4b3-f5b3c34adeab
+		summarizeBy: none
+		sourceColumn: TermReason
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Employment status. One of Active, Voluntarily Terminated or Terminated for Cause. Active is what the current workforce measures count.
+	column EmploymentStatus
+		dataType: string
+		lineageTag: cbd1f1b3-abf2-4b6f-9de5-6d477d1ba8c5
+		summarizeBy: none
+		sourceColumn: EmploymentStatus
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Channel the employee was hired through, for example Indeed or Diversity Job Fair. One of the two field parameter options on the Overview page.
+	column RecruitmentSource
+		dataType: string
+		lineageTag: a7458af6-04e4-4776-8927-0e68d4ddbf20
+		summarizeBy: none
+		sourceColumn: RecruitmentSource
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Date of the most recent performance review. Latest value in the data is 28 February 2019. Not currently used by any visual.
+	column LastPerformanceReview_Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: bed729d9-7916-481c-8478-8c20b321685c
+		summarizeBy: none
+		sourceColumn: LastPerformanceReview_Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Job title, flattened onto the employee row in Power Query. Duplicates positions[Position], which is the one to prefer for new visuals.
+	column Position
+		dataType: string
+		lineageTag: d6e51c18-30b8-4df4-a5de-cfbf9472ec01
+		summarizeBy: none
+		sourceColumn: Position
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Age in whole years at the reference date 31 December 2018, the end of the last year that has hires or terminations in the data. Fixed when the model refreshes, so it does not move as real time passes. Everyone has had their birthday by 31 December, so the year difference is the exact age.
+	column Age =
+			
+			VAR ReferenceDate = DATE(2018, 12, 31)
+			RETURN
+			    YEAR(ReferenceDate) - YEAR(employees[DOB])
+		formatString: 0
+		lineageTag: e89d3a4e-1053-40df-8ed8-3adffd26af7d
+		summarizeBy: none
+
+		annotation SummarizationSetBy = User
+
+	/// Age band derived from Age. Under 25 is empty in this data because the youngest employee is 26 at the reference date. One of the two field parameter options on the Overview page.
+	column 'Age ranges' =
+			
+			SWITCH(
+			    TRUE(),
+			    employees[Age] < 25, "Under 25",
+			    employees[Age] >= 25 && employees[Age] < 35, "25-34",
+			    employees[Age] >= 35 && employees[Age] < 45, "35-44",
+			    employees[Age] >= 45 && employees[Age] < 55, "45-54",
+			    employees[Age] >= 55 && employees[Age] < 65, "55-64",
+			    employees[Age] >= 65, "65+"
+			)
+		lineageTag: a70e4123-6b7d-44db-b01b-7ca511e3cdf5
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Department key, flattened onto the employee row in Power Query. Joins to DepartmentsEmployees[DepartmentID]. Hidden because it is plumbing rather than something to report on.
+	column DepartmentID
+		dataType: int64
+		isHidden
+		formatString: 0
+		isAvailableInMdx: false
+		lineageTag: ece4029f-edd2-41f1-971d-d191b63aeab1
+		summarizeBy: none
+		sourceColumn: DepartmentID
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Department name, flattened onto the employee row in Power Query. Duplicates departments[Department], which is the one to prefer for new visuals. Hidden to keep a single department field in the field list.
+	column Department
+		dataType: string
+		isHidden
+		isAvailableInMdx: false
+		lineageTag: 610eb1ce-6a3b-4ef1-80d0-4e34a65cf270
+		summarizeBy: none
+		sourceColumn: Department
+
+		annotation SummarizationSetBy = Automatic
+
+	partition employees = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(SourceFolder & "\employees.csv"),[Delimiter=",", Columns=16, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Employee_Name", type text}, {"EmpID", Int64.Type}, {"Sex", type text}, {"MaritalDesc", type text}, {"CitizenDesc", type text}, {"State", type text}, {"Zip", Int64.Type}, {"HispanicLatino", type text}, {"RaceDesc", type text}, {"DOB", type date}, {"DateofHire", type date}, {"DateofTermination", type date}, {"TermReason", type text}, {"EmploymentStatus", type text}, {"RecruitmentSource", type text}, {"LastPerformanceReview_Date", type date}}),
+				    // State, Zip and HispanicLatino are not used by any visual or measure, so they are
+				    // dropped here rather than loaded and left sitting in the field list.
+				    #"Removed Other Columns" = Table.RemoveColumns(#"Changed Type",{"State", "Zip", "HispanicLatino"}),
+				    // The four merges below flatten the job title, the department key and the department
+				    // name onto the employee row. Both flattened attributes also exist on their own
+				    // dimensions and are reachable through relationships, so they are duplicates kept
+				    // only because existing visuals bind to them. Collapsing employees and employee_fact
+				    // into one table would remove the need for all of this.
+				    #"Merged Queries" = Table.NestedJoin(#"Removed Other Columns", {"EmpID"}, employee_fact, {"EmpID"}, "employee_fact", JoinKind.LeftOuter),
+				    #"Expanded employee_fact" = Table.ExpandTableColumn(#"Merged Queries", "employee_fact", {"PositionID"}, {"employee_fact.PositionID"}),
+				    #"Merged Queries1" = Table.NestedJoin(#"Expanded employee_fact", {"employee_fact.PositionID"}, positions, {"PositionID"}, "positions", JoinKind.LeftOuter),
+				    #"Expanded positions" = Table.ExpandTableColumn(#"Merged Queries1", "positions", {"Position"}, {"positions.Position"}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Expanded positions",{"employee_fact.PositionID"}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Removed Columns",{{"positions.Position", "Position"}}),
+				    #"Merged Queries2" = Table.NestedJoin(#"Renamed Columns", {"EmpID"}, employee_fact, {"EmpID"}, "employee_fact", JoinKind.LeftOuter),
+				    #"Expanded employee_fact1" = Table.ExpandTableColumn(#"Merged Queries2", "employee_fact", {"DeptID"}, {"employee_fact.DeptID"}),
+				    #"Renamed Columns1" = Table.RenameColumns(#"Expanded employee_fact1",{{"employee_fact.DeptID", "Department"}}),
+				    #"Merged Queries3" = Table.NestedJoin(#"Renamed Columns1", {"Department"}, departments, {"DeptID"}, "departments", JoinKind.LeftOuter),
+				    #"Expanded departments" = Table.ExpandTableColumn(#"Merged Queries3", "departments", {"Department"}, {"departments.Department"}),
+				    #"Renamed Columns2" = Table.RenameColumns(#"Expanded departments",{{"Department", "DepartmentID"}, {"departments.Department", "Department"}})
+				in
+				    #"Renamed Columns2"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

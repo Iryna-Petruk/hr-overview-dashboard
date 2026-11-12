@@ -1,0 +1,647 @@
+/// Measure container. Holds every measure in the model and no data of its own, which is why it has no columns and no relationships.
+table _DAX_measures
+	lineageTag: d7b2b1b2-4cd1-4b8b-8b39-3d15b14ef871
+
+	/// Number of employees currently on the books, meaning EmploymentStatus is Active. KEEPFILTERS means a slicer on employment status narrows this rather than being overwritten.
+	measure EmployeeTotalCurrent =
+			
+			CALCULATE(
+			    DISTINCTCOUNT(employees[EmpID]),
+			    KEEPFILTERS(employees[EmploymentStatus] = "Active")
+			)
+		formatString: #,0
+		displayFolder: Employee
+		lineageTag: 3fd4eabb-3183-414e-a750-b08aaca1ab9f
+
+	/// Average annual salary of the current active workforce, so it matches EmployeeTotalCurrent. For the average across everyone who has ever worked here use EmployeeSalaryAVGAllStaff.
+	measure EmployeeSalaryAVG =
+			
+			CALCULATE(
+			    AVERAGE(employee_fact[Salary]),
+			    KEEPFILTERS(employees[EmploymentStatus] = "Active")
+			)
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Employee
+		lineageTag: 6e2822bd-7946-4617-add7-a9e06528a3f7
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	/// Youngest active employee, in whole years at 31 December 2018.
+	measure EmployeeAgeMIN =
+			
+			CALCULATE(
+			    MIN(employees[Age]),
+			    KEEPFILTERS(employees[EmploymentStatus] = "Active")
+			)
+		formatString: #,0
+		displayFolder: Employee
+		lineageTag: a1757bec-a392-48c1-8f0c-ef12c31c7d27
+
+	/// Oldest active employee, in whole years at 31 December 2018.
+	measure EmployeeAgeMAX =
+			
+			CALCULATE(
+			    MAX(employees[Age]),
+			    KEEPFILTERS(employees[EmploymentStatus] = "Active")
+			)
+		formatString: #,0
+		displayFolder: Employee
+		lineageTag: ee5c2294-ec97-4ee7-bf58-a8c45172c26c
+
+	/// Average age of the active workforce, in whole years at 31 December 2018, rounded down.
+	measure EmployeeAgeAVG =
+			
+			CALCULATE(
+			    ROUNDDOWN(AVERAGE(employees[Age]), 0),
+			    KEEPFILTERS(employees[EmploymentStatus] = "Active")
+			)
+		formatString: #,0
+		displayFolder: Employee
+		lineageTag: ec0313bd-4606-4c4f-aa1b-edacb9c0d2ea
+
+	/// Lowest salary, read through the hire date relationship so it responds to the year axis.
+	measure SalaryMIN =
+			
+			CALCULATE(
+			    MIN(employee_fact[Salary]),
+			    USERELATIONSHIP(employees[DateofHire], DateTable[Date])
+			)
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Salary
+		lineageTag: e9581b77-a78c-431b-b66e-93b108cb377f
+
+	/// Twenty fifth percentile of salary, read through the hire date relationship. The bottom of the box on the salary distribution chart.
+	measure SalaryPERC25 =
+			
+			CALCULATE(
+			    PERCENTILE.INC(employee_fact[Salary], 0.25),
+			    USERELATIONSHIP(employees[DateofHire], DateTable[Date])
+			)
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Salary
+		lineageTag: 60475a21-d96a-4e89-95dd-fc54606d1a18
+
+	/// Median salary, read through the hire date relationship.
+	measure SalaryMEDIAN =
+			
+			CALCULATE(
+			    MEDIAN(employee_fact[Salary]),
+			    USERELATIONSHIP(employees[DateofHire], DateTable[Date])
+			)
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Salary
+		lineageTag: df621b14-24bb-497e-8886-d09ef5422735
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	/// Average salary, read through the hire date relationship so it responds to the year axis. The Overview KPI card uses EmployeeSalaryAVG instead, which is restricted to active staff.
+	measure SalaryAVG =
+			
+			CALCULATE(
+			    AVERAGE(employee_fact[Salary]),
+			    USERELATIONSHIP(employees[DateofHire], DateTable[Date])
+			)
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Salary
+		lineageTag: 6b7ea25b-8831-4715-9840-aa1929207a0c
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	/// Seventy fifth percentile of salary, read through the hire date relationship. The top of the box on the salary distribution chart.
+	measure SalaryPERC75 =
+			
+			CALCULATE(
+			    PERCENTILE.INC(employee_fact[Salary], 0.75),
+			    USERELATIONSHIP(employees[DateofHire], DateTable[Date])
+			)
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Salary
+		lineageTag: 6ff90b47-36ac-466e-8b73-7a6a9486a8fa
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	/// Highest salary, read through the hire date relationship. With one employee selected this is that person's salary.
+	measure SalaryMAX =
+			
+			CALCULATE(
+			    MAX(employee_fact[Salary]),
+			    USERELATIONSHIP(employees[DateofHire], DateTable[Date])
+			)
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Salary
+		lineageTag: fddcff47-2e4a-40a0-95e0-e149fe969d7b
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	/// Interquartile range of salary, the seventy fifth percentile less the twenty fifth.
+	measure SalaryIQR = [SalaryPERC75] - [SalaryPERC25]
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Salary
+		lineageTag: 086230ac-bda3-46e9-ab88-454fa935bd0f
+
+	/// Distance from the twenty fifth percentile to the median. Stacked under Salary75-50 to draw the lower half of the box.
+	measure Salary50-25 = [SalaryMEDIAN] - [SalaryPERC25]
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Salary
+		lineageTag: d3b10139-e2a2-4fba-930f-fc408a774db7
+
+	/// Distance from the median to the seventy fifth percentile. Stacked on Salary50-25 to draw the upper half of the box.
+	measure Salary75-50 = [SalaryPERC75] - [SalaryMEDIAN]
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Salary
+		lineageTag: 3f1c2d44-79c7-4bf4-b6ef-30e44d121895
+
+	/// Employees who left during the period, counted on their termination date. Zero rather than blank when nobody left.
+	measure EmployeesCount_Left =
+			
+			VAR Leavers =
+			    CALCULATE(
+			        DISTINCTCOUNT(employees[EmpID]),
+			        USERELATIONSHIP(employees[DateofTermination], DateTable[Date]),
+			        employees[EmploymentStatus] <> "Active"
+			    )
+			RETURN
+			    COALESCE(Leavers, 0)
+		formatString: #,0
+		displayFolder: Employee
+		lineageTag: 1f60fd1e-2ed5-4f1d-980a-3cea552278a2
+
+	/// Headcount on the first day of the period, meaning hired on or before that day and not yet left.
+	measure EmployeesCount_StartOfPeriod =
+			
+			VAR PeriodStart = MIN(DateTable[Date])
+			RETURN
+			    CALCULATE(
+			        DISTINCTCOUNT(employees[EmpID]),
+			        employees[DateofHire] <= PeriodStart,
+			        ISBLANK(employees[DateofTermination]) || employees[DateofTermination] >= PeriodStart
+			    )
+		formatString: #,0
+		displayFolder: Employee
+		lineageTag: f1bae8e6-ba29-416b-b686-0ecbd0e9b8bd
+
+	/// Headcount on the last day of the period, meaning hired before that day and not yet left.
+	measure EmployeesCount_EndOfPeriod =
+			
+			VAR PeriodEnd = MAX(DateTable[Date])
+			RETURN
+			    CALCULATE(
+			        DISTINCTCOUNT(employees[EmpID]),
+			        employees[DateofHire] < PeriodEnd,
+			        ISBLANK(employees[DateofTermination]) || employees[DateofTermination] >= PeriodEnd
+			    )
+		formatString: #,0
+		displayFolder: Employee
+		lineageTag: c1bcfe3b-4698-4bea-ae2c-9a09913d2452
+
+	/// Mean of the opening and closing headcount. The denominator of the turnover and attrition rates.
+	measure EmployeesCount_AvgPerPeriod =
+			
+			DIVIDE(
+			    [EmployeesCount_StartOfPeriod] + [EmployeesCount_EndOfPeriod],
+			    2
+			)
+		formatString: #,0.0
+		displayFolder: Employee
+		lineageTag: 29357ff2-54f3-44d1-9d2f-bdcbb10f483c
+
+	/// Share of the workforce that left, pooled across the years in context. Total leavers divided by the sum of each year's average headcount, so a single year gives that year's rate and a multi year total weights each year by its size.
+	measure 'Turnover Rate' =
+			
+			VAR YearsInScope = VALUES(DateTable[Year])
+			VAR Leavers = SUMX(YearsInScope, [EmployeesCount_Left])
+			VAR AverageHeadcount = SUMX(YearsInScope, [EmployeesCount_AvgPerPeriod])
+			RETURN
+			    DIVIDE(Leavers, AverageHeadcount)
+		formatString: #,0.0%;-#,0.0%;#,0.0%
+		displayFolder: Turnover Rate
+		lineageTag: c51e24ae-3add-426e-8adc-431aa4450648
+
+	/// Change in turnover rate against the previous period, month on month when a month is in scope and year on year otherwise.
+	measure 'Turnover Rate vs Prev Period' =
+			
+			VAR PreviousPeriod =
+			    IF(
+			        ISINSCOPE(DateTable[Month Name]),
+			        CALCULATE([Turnover Rate], DATEADD(DateTable[Date], -1, MONTH)),
+			        CALCULATE([Turnover Rate], DATEADD(DateTable[Date], -1, YEAR))
+			    )
+			RETURN
+			    COALESCE([Turnover Rate] - PreviousPeriod, 0)
+		formatString: #,0.0%;-#,0.0%;#,0.0%
+		displayFolder: Turnover Rate
+		lineageTag: 4cc332e3-47bc-4451-8232-52e9c73002e0
+
+	/// Pooled turnover rate over the last N years, where N comes from the Years to look back on slicer.
+	measure TurnoverRateLastYears =
+			
+			VAR LatestYear = MAX(DateTable[Year])
+			VAR WindowYears = [Rates years  window Value]
+			RETURN
+			    CALCULATE(
+			        [Turnover Rate],
+			        DateTable[Year] > LatestYear - WindowYears && DateTable[Year] <= LatestYear
+			    )
+		formatString: #,0.0%;-#,0.0%;#,0.0%
+		displayFolder: Turnover Rate
+		lineageTag: b5b6a8b4-6086-4008-b9b6-43235b388d9f
+
+	/// Employees who left voluntarily during the period, counted on their termination date. Zero rather than blank when nobody left.
+	measure EmployeesCount_LeftVoluntarily =
+			
+			VAR Leavers =
+			    CALCULATE(
+			        DISTINCTCOUNT(employees[EmpID]),
+			        USERELATIONSHIP(employees[DateofTermination], DateTable[Date]),
+			        employees[EmploymentStatus] = "Voluntarily Terminated"
+			    )
+			RETURN
+			    COALESCE(Leavers, 0)
+		formatString: #,0
+		displayFolder: Employee
+		lineageTag: f46211ab-72d2-44ac-853b-15e9235cbf78
+
+	/// Share of the workforce that left voluntarily, pooled across the years in context. Same shape as Turnover Rate but counting resignations only.
+	measure 'Attrition Rate' =
+			
+			VAR YearsInScope = VALUES(DateTable[Year])
+			VAR Leavers = SUMX(YearsInScope, [EmployeesCount_LeftVoluntarily])
+			VAR AverageHeadcount = SUMX(YearsInScope, [EmployeesCount_AvgPerPeriod])
+			RETURN
+			    DIVIDE(Leavers, AverageHeadcount)
+		formatString: #,0.0%;-#,0.0%;#,0.0%
+		displayFolder: Attrition Rate
+		lineageTag: c57b544b-7324-4c7d-a340-1d64c77f15b1
+
+	/// Change in attrition rate against the previous period, month on month when a month is in scope and year on year otherwise.
+	measure 'Attrition Rate vs Prev Period' =
+			
+			VAR PreviousPeriod =
+			    IF(
+			        ISINSCOPE(DateTable[Month Name]),
+			        CALCULATE([Attrition Rate], DATEADD(DateTable[Date], -1, MONTH)),
+			        CALCULATE([Attrition Rate], DATEADD(DateTable[Date], -1, YEAR))
+			    )
+			RETURN
+			    COALESCE([Attrition Rate] - PreviousPeriod, 0)
+		formatString: #,0.0%;-#,0.0%;#,0.0%
+		displayFolder: Attrition Rate
+		lineageTag: a629e99f-e399-4e5f-b256-8060f6383012
+
+	/// Pooled attrition rate over the last N years, where N comes from the Years to look back on slicer.
+	measure AttritionRateLastYears =
+			
+			VAR LatestYear = MAX(DateTable[Year])
+			VAR WindowYears = [Rates years  window Value]
+			RETURN
+			    CALCULATE(
+			        [Attrition Rate],
+			        DateTable[Year] > LatestYear - WindowYears && DateTable[Year] <= LatestYear
+			    )
+		formatString: #,0.0%;-#,0.0%;#,0.0%
+		displayFolder: Attrition Rate
+		lineageTag: faf1a617-81cb-4df2-b778-e0c04d8061bf
+
+	/// Employees hired during the latest year in context, counted on their hire date. Zero rather than blank when nobody was hired.
+	measure EmployeesHiredPerPeriod =
+			
+			VAR LatestYear = MAX(DateTable[Year])
+			VAR Hired =
+			    CALCULATE(
+			        DISTINCTCOUNT(employees[EmpID]),
+			        DateTable[Year] = LatestYear,
+			        USERELATIONSHIP(employees[DateofHire], DateTable[Date]),
+			        NOT ISBLANK(employees[DateofHire])
+			    )
+			RETURN
+			    COALESCE(Hired, 0)
+		formatString: #,0
+		displayFolder: Employee
+		lineageTag: 99fd20b4-a17f-4277-be7f-6e36f60c61d6
+
+	/// Share of the opening headcount still present at the end of the period, excluding people hired during it, pooled across the years in context.
+	measure 'Retention Rate' =
+			
+			VAR YearsInScope = VALUES(DateTable[Year])
+			VAR Retained = SUMX(YearsInScope, [EmployeesCount_EndOfPeriod] - [EmployeesHiredPerPeriod])
+			VAR Opening = SUMX(YearsInScope, [EmployeesCount_StartOfPeriod])
+			RETURN
+			    DIVIDE(Retained, Opening)
+		formatString: #,0.0%;-#,0.0%;#,0.0%
+		displayFolder: Retention Rate
+		lineageTag: bfa57d7a-eb78-423a-90d2-628e29034df2
+
+	/// Change in retention rate against the previous period, month on month when a month is in scope and year on year otherwise.
+	measure 'Retention Rate vs Prev Period' =
+			
+			VAR PreviousPeriod =
+			    IF(
+			        ISINSCOPE(DateTable[Month Name]),
+			        CALCULATE([Retention Rate], DATEADD(DateTable[Date], -1, MONTH)),
+			        CALCULATE([Retention Rate], DATEADD(DateTable[Date], -1, YEAR))
+			    )
+			RETURN
+			    COALESCE([Retention Rate] - PreviousPeriod, 0)
+		formatString: #,0.0%;-#,0.0%;#,0.0%
+		displayFolder: Retention Rate
+		lineageTag: b335ab26-d2e7-4de4-a466-fdd1262ae40e
+
+	/// Pooled retention rate over the last N years, where N comes from the Years to look back on slicer.
+	measure RetentionRateLastYears =
+			
+			VAR LatestYear = MAX(DateTable[Year])
+			VAR WindowYears = [Rates years  window Value]
+			RETURN
+			    CALCULATE(
+			        [Retention Rate],
+			        DateTable[Year] > LatestYear - WindowYears && DateTable[Year] <= LatestYear
+			    )
+		formatString: #,0.0%;-#,0.0%;#,0.0%
+		displayFolder: Retention Rate
+		lineageTag: 646d9d48-8244-4594-851f-2e53e6ed77e2
+
+	/// Termination date of the selected employee as text, or N/A when they are still employed. Text, so it carries no numeric format string.
+	measure EmployeeTerminationDate =
+			
+			VAR TerminationDate = MAX(employees[DateofTermination])
+			RETURN
+			    IF(
+			        ISBLANK(TerminationDate),
+			        "N/A",
+			        FORMAT(TerminationDate, "dd/mm/yyyy")
+			    )
+		displayFolder: Employee profile
+		lineageTag: 80c5e96e-556a-4763-8c86-5aba41122053
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES","INTEGER_FORMATTING"]}
+
+	/// Distance from the average satisfaction score up to the maximum of 5. Paired with SatisfactionScore to close the satisfaction ring, so it reads as the gap rather than as satisfaction itself.
+	measure EmployeeSatisfaction = 5 - AVERAGE(employee_fact[EmpSatisfaction])
+		formatString: #,0.0
+		displayFolder: Engagement
+		lineageTag: 37ffcec5-4515-482a-bb36-a00b0e2c707a
+
+	/// Distance from the average engagement score up to the maximum of 5. Paired with EngagementScore to close the engagement ring, so it reads as the gap rather than as engagement itself.
+	measure EmployeeEngagement = 5 - AVERAGE(employee_fact[EngagementSurvey])
+		formatString: #,0.0
+		displayFolder: Engagement
+		lineageTag: 2647cdce-092c-4a7b-ae0f-cb950fdba1a4
+
+	/// Average salary of the department the selected employee belongs to.
+	measure EmployeeSalaryAVGbyDep =
+			
+			CALCULATE(
+			    AVERAGE(DepartmentsEmployees[Salary]),
+			    ALLEXCEPT(DepartmentsEmployees, DepartmentsEmployees[Department])
+			)
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Peer comparison
+		lineageTag: 2cb23b62-8ddc-40f7-9856-28f0a6aee01b
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	/// How far an employee's salary sits above or below their department average, as a percentage.
+	measure 'EmployeesSalaryAVG vs DeptAVG' =
+			
+			DIVIDE(
+			    AVERAGE(DepartmentsEmployees[Salary]),
+			    [EmployeeSalaryAVGbyDep]
+			) - 1
+		formatString: #,0.0%;-#,0.0%;#,0.0%
+		displayFolder: Peer comparison
+		lineageTag: a0978a47-a50a-40da-bee9-0ebee88b6eb9
+
+	/// How far an employee's salary sits above or below the all staff average, as a percentage.
+	measure 'EmployeeSalary vs SelectedEmployee' =
+			
+			DIVIDE(
+			    AVERAGE(DepartmentsEmployees[Salary]),
+			    [EmployeeSalaryAVGAllStaff]
+			) - 1
+		formatString: #,0.0%;-#,0.0%;#,0.0%
+		displayFolder: Peer comparison
+		lineageTag: b79f164d-ae16-4521-a1bf-ca97f444fe47
+
+	/// The selected employee's salary against their department average, as a percentage.
+	measure 'EmployeeSalaryDiff vs DeptAVG %' =
+			
+			VAR EmployeeSalary = [SalaryMAX]
+			VAR DepartmentSalary = [EmployeeSalaryAVGbyDep]
+			RETURN
+			    DIVIDE(EmployeeSalary, DepartmentSalary) - 1
+		formatString: #,0.0%;-#,0.0%;#,0.0%
+		displayFolder: Peer comparison
+		lineageTag: a2f6f74d-3705-4335-8a31-108812f35c6a
+
+	/// An SVG progress bar for the selected employee's engagement, returned as a data URI. Blank unless exactly one employee is in context. Text, so it carries no numeric format string.
+	measure 'EngagementRate ProgressBar' =
+			
+			VAR Actual = AVERAGE(DepartmentsEmployees[EngagementRate])
+			VAR Target = 5
+			VAR PERCENTAGEFILL = DIVIDE(Actual, Target) * 100
+			VAR SVGStart = "<svg width='100' height='20' viewBox='-2 -2 102 22' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' display='block' overflow='visible'>"
+			VAR SVGDefs = "<defs><linearGradient id='linear' x1='0%' y1='0%' x2='" & PERCENTAGEFILL & "%' y2='0%'><stop offset='0' style='stop-color: #222725' /><stop offset='0.5' style='stop-color: #899878' /><stop offset='1' style='stop-color: #E4E6C3' /></linearGradient></defs>"
+			VAR SVGTrack = "<rect id='track' x='0' y='3' rx='0' ry='0' width='100' height='5' fill='#DeDeDe' />"
+			VAR SVGFill = "<rect id='fill' x='0' y='3' rx='0' ry='0' width='" & PERCENTAGEFILL & "' height='15' fill='url(#linear)'></rect>"
+			VAR SVGEnd = "</svg>"
+			VAR FullSVG = "data:image/svg+xml;utf8," & SVGStart & SVGDefs & SVGTrack & SVGFill & SVGEnd
+			RETURN
+			    IF(HASONEVALUE(DepartmentsEmployees[Employee_Name]),
+			       FullSVG,
+			       BLANK()
+			    )
+		displayFolder: Engagement
+		lineageTag: 57feb939-c041-49c9-98ca-997e9926e22e
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES","INTEGER_FORMATTING"]}
+
+	/// Highlight colour for the row of the peer table that is the selected employee, blank for everyone else. Text, so it carries no numeric format string.
+	measure EmployeeSelected =
+			
+			VAR SelectedName = MAX(employees[Employee_Name])
+			RETURN
+			    IF(
+			        SELECTEDVALUE(DepartmentsEmployees[Employee_Name]) = SelectedName,
+			        "#E4E6C3"
+			    )
+		displayFolder: Peer comparison
+		lineageTag: ca0c7222-56c2-4039-8788-12a185e5cf50
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES","INTEGER_FORMATTING"]}
+
+	/// Average annual salary across all employees in context, active and former. Used as the comparison baseline on the Employees Breakdown page.
+	measure EmployeeSalaryAVGAllStaff = AVERAGE(employee_fact[Salary])
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Employee
+		lineageTag: 7a1c4e52-93db-4f08-b6a7-21e5c8740d93
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	/// Distinct employees in context regardless of employment status, so former employees are included. Used as the headcount column on the salary by age chart.
+	measure EmployeeCountAll = DISTINCTCOUNT(employees[EmpID])
+		formatString: #,0
+		displayFolder: Employee
+		lineageTag: 4b7e9a30-6d12-4c85-9f43-80ab5d2e71c6
+
+	/// Average employee satisfaction score, from 1 to 5. The filled part of the satisfaction ring.
+	measure SatisfactionScore = AVERAGE(employee_fact[EmpSatisfaction])
+		formatString: #,0.0
+		displayFolder: Engagement
+		lineageTag: 2e86f1d4-5b73-4a90-8c21-63df7e095ab8
+
+	/// Average engagement survey score, from 1 to 5. The filled part of the engagement ring.
+	measure EngagementScore = AVERAGE(employee_fact[EngagementSurvey])
+		formatString: #,0.0
+		displayFolder: Engagement
+		lineageTag: 9f30ba71-c284-4e16-95d7-40b8e21c6a37
+
+	/// Average engagement score of the employees listed in the peer table.
+	measure PeerEngagementRate = AVERAGE(DepartmentsEmployees[EngagementRate])
+		formatString: #,0.0
+		displayFolder: Peer comparison
+		lineageTag: c5a712f8-30e6-4b19-9d84-71fe08c3a265
+
+	/// Average satisfaction score of the employees listed in the peer table.
+	measure PeerSatisfactionRate = AVERAGE(DepartmentsEmployees[SatisfactionRate])
+		formatString: #,0.0
+		displayFolder: Peer comparison
+		lineageTag: d8b4036a-71c5-42fe-8a97-5c20eb149d73
+
+	/// Average salary of the employees listed in the peer table.
+	measure PeerSalary = AVERAGE(DepartmentsEmployees[Salary])
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: Peer comparison
+		lineageTag: f20c69b5-48d3-4a71-b85e-9d3701ca6428
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	/// Name of the employee selected on the Employees Breakdown page. Text, so it carries no numeric format string.
+	measure EmployeeNameSelected = SELECTEDVALUE(employees[Employee_Name])
+		displayFolder: Employee profile
+		lineageTag: 1d9f4c07-6a28-4b53-91ce-f8407db3e215
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES","INTEGER_FORMATTING"]}
+
+	/// Payroll number of the selected employee. Formatted without a thousands separator because it is an identifier rather than a quantity.
+	measure EmployeeID = SELECTEDVALUE(employees[EmpID])
+		formatString: 0
+		displayFolder: Employee profile
+		lineageTag: 3a05e8c1-92b7-4d60-8f14-c7e206ba5931
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["INTEGER_FORMATTING"]}
+
+	/// Job title of the selected employee, read from the title flattened onto the employee row. The positions dimension sits on the one side of its relationship to employee_fact, so a filter on an employee does not reach it. Text, so it carries no numeric format string.
+	measure EmployeePosition = SELECTEDVALUE(employees[Position])
+		displayFolder: Employee profile
+		lineageTag: 6c81a3f9-40de-4728-95b1-20ad8f73c6e4
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES","INTEGER_FORMATTING"]}
+
+	/// Employment status of the selected employee. Text, so it carries no numeric format string.
+	measure EmployeeStatus = SELECTEDVALUE(employees[EmploymentStatus])
+		displayFolder: Employee profile
+		lineageTag: 8e42b07d-513a-4c96-ad28-70f1b5e39c84
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES","INTEGER_FORMATTING"]}
+
+	/// Department of the selected employee, read from the name flattened onto the employee row. The departments dimension sits on the one side of its relationship to employee_fact, so a filter on an employee does not reach it. Text, so it carries no numeric format string.
+	measure EmployeeDepartment = SELECTEDVALUE(employees[Department])
+		displayFolder: Employee profile
+		lineageTag: 4f7ca2e6-8b91-4053-9e7d-13b6ad08f271
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES","INTEGER_FORMATTING"]}
+
+	/// Manager of the selected employee, looked up by key because the managers dimension sits on the one side of its relationship to employee_fact and a filter on an employee does not reach it. Text, so it carries no numeric format string.
+	measure EmployeeManager =
+			LOOKUPVALUE(
+			    managers[ManagerName],
+			    managers[ManagerID], SELECTEDVALUE(employee_fact[ManagerID])
+			)
+		displayFolder: Employee profile
+		lineageTag: 72e0d148-6fab-4297-8c53-05b91de4237a
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES","INTEGER_FORMATTING"]}
+
+	/// Sex of the selected employee. Text, so it carries no numeric format string.
+	measure EmployeeSex = SELECTEDVALUE(employees[Sex])
+		displayFolder: Employee profile
+		lineageTag: 0b6e37cd-24f8-4a15-9b70-8ed2143fc059
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES","INTEGER_FORMATTING"]}
+
+	/// Marital status of the selected employee. Text, so it carries no numeric format string.
+	measure EmployeeMaritalStatus = SELECTEDVALUE(employees[MaritalDesc])
+		displayFolder: Employee profile
+		lineageTag: ad5c90b2-7e14-4368-b0a9-62f83e710dc6
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES","INTEGER_FORMATTING"]}
+
+	/// Citizenship of the selected employee. Text, so it carries no numeric format string.
+	measure EmployeeCitizenship = SELECTEDVALUE(employees[CitizenDesc])
+		displayFolder: Employee profile
+		lineageTag: 913f06ae-5c27-4b8d-82e1-4ad70b9c8536
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES","INTEGER_FORMATTING"]}
+
+	/// Latest performance rating of the selected employee. Text, so it carries no numeric format string.
+	measure EmployeePerformanceScore = SELECTEDVALUE(employee_fact[PerformanceScore])
+		displayFolder: Employee profile
+		lineageTag: 5b27e94f-c306-41da-97b8-e0d3418a62cb
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES","INTEGER_FORMATTING"]}
+
+	/// Reason the selected employee left, or the placeholder the source data carries for people still employed. Text, so it carries no numeric format string.
+	measure EmployeeTermReason = SELECTEDVALUE(employees[TermReason])
+		displayFolder: Employee profile
+		lineageTag: e4830951-7bc6-4d02-a158-6f29b0d7c413
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES","INTEGER_FORMATTING"]}
+
+	/// Date of birth of the selected employee.
+	measure EmployeeDOB = SELECTEDVALUE(employees[DOB])
+		formatString: d mmmm\, yyyy
+		displayFolder: Employee profile
+		lineageTag: 7d1b58ec-0942-4a63-bf25-3c89e0a714d2
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["INTEGER_FORMATTING"]}
+
+	/// Date the selected employee joined.
+	measure EmployeeHireDate = SELECTEDVALUE(employees[DateofHire])
+		formatString: d mmmm\, yyyy
+		displayFolder: Employee profile
+		lineageTag: 2fa96d30-8e51-4c74-b019-6d5a8273ce41
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["INTEGER_FORMATTING"]}
+
+	/// Age of the selected employee, in whole years at 31 December 2018.
+	measure EmployeeAge = SELECTEDVALUE(employees[Age])
+		formatString: #,0
+		displayFolder: Employee profile
+		lineageTag: 86c40e7b-2d19-4f85-a37c-50e9b1d26438
+
+	/// Number of extra projects the selected employee has worked on.
+	measure EmployeeSpecialProjects = SUM(employee_fact[SpecialProjectsCount])
+		formatString: #,0
+		displayFolder: Employee profile
+		lineageTag: 41e7b9d2-6c80-4523-9fa1-82d407e35bc7
+
+	/// Number of days the selected employee has been absent.
+	measure EmployeeAbsences = SUM(employee_fact[Absences])
+		formatString: #,0
+		displayFolder: Employee profile
+		lineageTag: 90d2f461-3ba7-4e18-85c0-72fe19ad4306
+
+	partition _DAX_measures = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Column1 = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Column1", type text}}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{"Column1"})
+				in
+				    #"Removed Columns"
+
+	annotation PBI_ResultType = Table
+
+	annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["ENSURE_TABLES_HAVE_RELATIONSHIPS"]}
+

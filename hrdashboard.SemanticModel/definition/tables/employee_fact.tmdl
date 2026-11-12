@@ -1,0 +1,156 @@
+/// Employment facts, one row per employee, 311 in total. Holds salary, performance, engagement and attendance, plus the keys to department, position and manager. Same grain as the employees table.
+table employee_fact
+	lineageTag: 3fa8e07e-710e-439f-b36c-aeadba456d9d
+
+	/// Employee key. Joins to employees[EmpID]. Hidden because it is plumbing rather than something to report on.
+	column EmpID
+		dataType: int64
+		isHidden
+		isKey
+		formatString: 0
+		isAvailableInMdx: false
+		lineageTag: 39f2ff12-ec5a-411f-9828-558e0834befa
+		summarizeBy: none
+		sourceColumn: EmpID
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Department key. Joins to departments[DeptID]. Hidden because it is plumbing rather than something to report on.
+	column DeptID
+		dataType: int64
+		isHidden
+		formatString: 0
+		isAvailableInMdx: false
+		lineageTag: 7c58a0f3-69aa-4860-aaa0-468ff871ea10
+		summarizeBy: none
+		sourceColumn: DeptID
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Annual salary in US dollars. Hidden so that salary is read through the salary measures, which apply the hire date relationship.
+	column Salary
+		dataType: int64
+		isHidden
+		formatString: #,0
+		isAvailableInMdx: false
+		lineageTag: da87bda0-d89d-4ba9-805a-192556a0c2cb
+		summarizeBy: sum
+		sourceColumn: Salary
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Position key. Joins to positions[PositionID]. Hidden because it is plumbing rather than something to report on.
+	column PositionID
+		dataType: int64
+		isHidden
+		formatString: 0
+		isAvailableInMdx: false
+		lineageTag: dba44924-002b-4cf5-a680-dd43dce5b82a
+		summarizeBy: none
+		sourceColumn: PositionID
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Manager key. Joins to managers[ManagerID]. Hidden because it is plumbing rather than something to report on.
+	column ManagerID
+		dataType: int64
+		isHidden
+		formatString: 0
+		isAvailableInMdx: false
+		lineageTag: a1d53d22-86ac-4c5a-bed1-f399656b6f21
+		summarizeBy: none
+		sourceColumn: ManagerID
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Latest performance rating as text, for example Fully Meets or Exceeds. Used as the category axis on the performance view of the salary distribution chart.
+	column PerformanceScore
+		dataType: string
+		lineageTag: 0a461b74-2b1f-4341-a164-1542f14c8323
+		summarizeBy: none
+		sourceColumn: PerformanceScore
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Engagement survey score from 1 to 5, to one decimal place. Hidden so that engagement is read through the engagement measures.
+	column EngagementSurvey
+		dataType: double
+		isHidden
+		isAvailableInMdx: false
+		lineageTag: 6a671209-6024-4722-93ba-ebc868b21244
+		summarizeBy: none
+		sourceColumn: EngagementSurvey
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Employee satisfaction rating from 1 to 5, whole numbers. Left visible because it is used as a category axis on the salary by satisfaction chart.
+	column EmpSatisfaction
+		dataType: int64
+		formatString: 0
+		lineageTag: c07a2810-83e2-474f-8629-e5e57a2a676f
+		summarizeBy: none
+		sourceColumn: EmpSatisfaction
+
+		annotation SummarizationSetBy = User
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["HIDE_FACT_TABLE_COLUMNS"]}
+
+	/// Number of extra projects the employee has worked on. Hidden so it is read through the special projects measure.
+	column SpecialProjectsCount
+		dataType: int64
+		isHidden
+		formatString: 0
+		isAvailableInMdx: false
+		lineageTag: 1cecd449-15a9-4079-91d6-029e3c59bf5e
+		summarizeBy: sum
+		sourceColumn: SpecialProjectsCount
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Number of days absent. Hidden so it is read through the absences measure.
+	column Absences
+		dataType: int64
+		isHidden
+		formatString: 0
+		isAvailableInMdx: false
+		lineageTag: 708f1c49-2dac-4f04-9b81-6fb268f10dde
+		summarizeBy: sum
+		sourceColumn: Absences
+
+		annotation SummarizationSetBy = Automatic
+
+	partition employee_fact = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(SourceFolder & "\employee_fact.csv"),[Delimiter=",", Columns=18, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"EmpID", Int64.Type}, {"MarriedID", Int64.Type}, {"MaritalStatusID", Int64.Type}, {"GenderID", Int64.Type}, {"EmpStatusID", Int64.Type}, {"DeptID", Int64.Type}, {"PerfScoreID", Int64.Type}, {"FromDiversityJobFairID", Int64.Type}, {"Salary", Int64.Type}, {"Termd", Int64.Type}, {"PositionID", Int64.Type}, {"ManagerID", Int64.Type}, {"PerformanceScore", type text}, {"EngagementSurvey", type number}, {"EmpSatisfaction", Int64.Type}, {"SpecialProjectsCount", Int64.Type}, {"DaysLateLast30", Int64.Type}, {"Absences", Int64.Type}}),
+				    // Eight numeric code columns duplicate attributes that already exist as text on the
+				    // employees table, or are simply unused by any visual or measure. Termd repeats
+				    // EmploymentStatus, the four ID columns repeat Sex, MaritalDesc, EmploymentStatus
+				    // and PerformanceScore. Dropped here rather than loaded and left in the field list.
+				    #"Removed Other Columns" = Table.RemoveColumns(#"Changed Type",{"MarriedID", "MaritalStatusID", "GenderID", "EmpStatusID", "PerfScoreID", "FromDiversityJobFairID", "Termd", "DaysLateLast30"}),
+				    // Eight Production Technicians carry no ManagerID. managers.csv lists Webster Butler
+				    // twice, once as 39 and once with a blank ID, so 39 is that manager and the blanks
+				    // belong to him. The same repair is applied in the managers query.
+				    #"Replaced Value" = Table.ReplaceValue(#"Removed Other Columns",null,39,Replacer.ReplaceValue,{"ManagerID"}),
+				    #"Sorted Rows" = Table.Sort(#"Replaced Value",{{"ManagerID", Order.Descending}}),
+				    // managers.csv lists Michael Albert as both 22 and 30. One employee points at 30 and
+				    // twenty-one point at 22, so fold 30 into 22.
+				    #"Replaced Value1" = Table.ReplaceValue(#"Sorted Rows",30,22,Replacer.ReplaceValue,{"ManagerID"}),
+				    // positions.csv titles both 17 and 18 Production Manager. Fold 17 into 18, matching
+				    // the same replacement in the positions query.
+				    #"Replaced Value2" = Table.ReplaceValue(#"Replaced Value1",17,18,Replacer.ReplaceValue,{"PositionID"}),
+				    // Replacing nulls left PositionID and ManagerID stored as decimals. Cast them back
+				    // to whole numbers so each joins its dimension on the same data type.
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Replaced Value2",{{"PositionID", Int64.Type}, {"ManagerID", Int64.Type}})
+				in
+				    #"Changed Type1"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

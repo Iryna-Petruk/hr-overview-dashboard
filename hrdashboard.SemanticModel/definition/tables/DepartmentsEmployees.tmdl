@@ -1,0 +1,94 @@
+/// One row per employee with their department and their average engagement, satisfaction and salary. A calculated summary of employees and employee_fact that backs the peer comparison table on the Employees Breakdown page, reached through a bidirectional many to many relationship on DepartmentID.
+table DepartmentsEmployees
+	lineageTag: 71d60d9f-154d-4ca0-82eb-78d9c3d058ed
+
+	/// Employee full name. The row label of the peer comparison table.
+	column Employee_Name
+		lineageTag: fd73e800-26ed-45bb-a576-eb67fc1d8297
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: employees[Employee_Name]
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Department key. Joins to employees[DepartmentID]. Hidden because it is plumbing rather than something to report on.
+	column DepartmentID
+		dataType: int64
+		isHidden
+		formatString: 0
+		isAvailableInMdx: false
+		lineageTag: 6a293fe0-395a-48d3-b2eb-dd4cde6e48ec
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: employees[DepartmentID]
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Department name. Groups the peer comparison table.
+	column Department
+		lineageTag: 31ee66ab-ae11-411d-8ac9-3e44b9049bb7
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: employees[Department]
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Average engagement survey score for the employee. Hidden so it is read through PeerEngagementRate.
+	column EngagementRate
+		isHidden
+		isAvailableInMdx: false
+		lineageTag: 274f5fda-e65d-480d-b59e-afa885ef0c7b
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [EngagementRate]
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Average salary for the employee. Hidden so it is read through PeerSalary.
+	column Salary
+		isHidden
+		isAvailableInMdx: false
+		lineageTag: 6ad1285a-cd68-4230-b1b4-6bed19ec4e48
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Salary]
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Average satisfaction rating for the employee. Hidden so it is read through PeerSatisfactionRate.
+	column SatisfactionRate
+		isHidden
+		isAvailableInMdx: false
+		lineageTag: df498284-82b1-4f45-9b5f-32a48151da44
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [SatisfactionRate]
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition DepartmentsEmployees = calculated
+		mode: import
+		source =
+				
+				CALCULATETABLE(
+				    SUMMARIZE(
+				        employees,
+				        employees[Employee_Name],
+				        employees[DepartmentID],
+				        employees[Department],
+				        "EngagementRate", AVERAGE(employee_fact[EngagementSurvey]),
+				        "SatisfactionRate", AVERAGE(employee_fact[EmpSatisfaction]),
+				        "Salary", AVERAGE(employee_fact[Salary])
+				    )
+				)
+
+	annotation PBI_Id = ee60ba2f73a14cf0ad20eda0d29691c6
+
+	annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["REDUCE_USAGE_OF_CALCULATED_TABLES"]}
+

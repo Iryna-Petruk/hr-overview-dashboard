@@ -1,0 +1,50 @@
+/// Employee avatar URLs, one row per employee. Fictional portrait images served by a third party, used by the photo visual on the Employees Breakdown page.
+table Photos
+	lineageTag: ffa8f9d1-8504-4fba-9b01-c673b6ea73da
+
+	/// Employee key. Joins to employees[EmpID]. Hidden because it is plumbing rather than something to report on.
+	column ID_upd
+		dataType: int64
+		isHidden
+		isKey
+		formatString: 0
+		isAvailableInMdx: false
+		lineageTag: 289ea8f5-19f4-4dbc-83c0-1b93a51225e6
+		summarizeBy: none
+		sourceColumn: ID_upd
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Web address of the employee avatar. Marked as an image URL so visuals render it as a picture rather than as text.
+	column ImageURL
+		dataType: string
+		lineageTag: 8bb0071a-1091-4528-aeea-20401e3f2025
+		dataCategory: ImageUrl
+		summarizeBy: none
+		sourceColumn: ImageURL
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Photos = m
+		mode: import
+		source =
+				let
+				    Source = Excel.Workbook(File.Contents(SourceFolder & "\people_image_urls_and_ids.xlsx"), null, true),
+				    Sheet1_Sheet = Source{[Item="Sheet1",Kind="Sheet"]}[Data],
+				    #"Promoted Headers" = Table.PromoteHeaders(Sheet1_Sheet, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"ID", Int64.Type}, {"ID_upd", Int64.Type}, {"ImageURL", type text}}),
+				    // The workbook holds 322 data rows, of which the last 11 are completely empty.
+				    // Sorting by ID ascending moves those null IDs to the top, so skipping 11 rows
+				    // drops exactly the blank rows and leaves 311 avatars with IDs 1 to 311 and no
+				    // gaps. Filtering on ID <> null would say the same thing more robustly.
+				    #"Sorted Rows" = Table.Sort(#"Changed Type",{{"ID", Order.Ascending}}),
+				    #"Removed Top Rows" = Table.Skip(#"Sorted Rows",11),
+				    // ID is only needed for the sort above. ID_upd is the key that joins to employees.
+				    #"Removed Columns" = Table.RemoveColumns(#"Removed Top Rows",{"ID"})
+				in
+				    #"Removed Columns"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

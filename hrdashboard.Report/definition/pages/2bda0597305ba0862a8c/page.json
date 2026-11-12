@@ -1,0 +1,51 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "2bda0597305ba0862a8c",
+  "displayName": "Salary Distribution",
+  "displayOption": "FitToPage",
+  "height": 1080,
+  "width": 1920,
+  "visibility": "HiddenInViewMode",
+  "visualInteractions": [
+    {
+      "source": "02164acc969b80d57b5c",
+      "target": "876a44164b037655d987",
+      "type": "NoFilter"
+    },
+    {
+      "source": "02164acc969b80d57b5c",
+      "target": "d89fb15560a01318bb62",
+      "type": "NoFilter"
+    },
+    {
+      "source": "02164acc969b80d57b5c",
+      "target": "12075978f55b8fe6ac0b",
+      "type": "NoFilter"
+    },
+    {
+      "source": "12075978f55b8fe6ac0b",
+      "target": "02164acc969b80d57b5c",
+      "type": "NoFilter"
+    },
+    {
+      "source": "12075978f55b8fe6ac0b",
+      "target": "876a44164b037655d987",
+      "type": "NoFilter"
+    },
+    {
+      "source": "12075978f55b8fe6ac0b",
+      "target": "d89fb15560a01318bb62",
+      "type": "NoFilter"
+    },
+    {
+      "source": "876a44164b037655d987",
+      "target": "02164acc969b80d57b5c",
+      "type": "NoFilter"
+    },
+    {
+      "source": "876a44164b037655d987",
+      "target": "12075978f55b8fe6ac0b",
+      "type": "NoFilter"
+    }
+  ]
+}

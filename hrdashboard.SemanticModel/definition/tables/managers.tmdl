@@ -1,0 +1,54 @@
+/// Manager dimension, one row per manager. Twenty-two managers after the duplicate rows in the source file are consolidated.
+table managers
+	lineageTag: 293676e3-298d-4eae-ba87-a8262b74e161
+
+	/// Manager name. Used by the manager slicer on every page.
+	column ManagerName
+		dataType: string
+		lineageTag: e6a23234-4cf6-4759-bbfa-df3a5042e6c2
+		summarizeBy: none
+		sourceColumn: ManagerName
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Manager key. Joins to employee_fact[ManagerID]. Hidden because it is plumbing rather than something to report on.
+	column ManagerID
+		dataType: int64
+		isHidden
+		isKey
+		formatString: 0
+		isAvailableInMdx: false
+		lineageTag: f251ed65-6e15-4e7e-9fed-35e8bae8c0df
+		summarizeBy: none
+		sourceColumn: ManagerID
+
+		annotation SummarizationSetBy = Automatic
+
+	partition managers = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(SourceFolder & "\managers.csv"),[Delimiter=",", Columns=2, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"ManagerName", type text}, {"ManagerID", Int64.Type}}),
+				    #"Sorted Rows" = Table.Sort(#"Changed Type",{{"ManagerID", Order.Ascending}}),
+				    // managers.csv lists Webster Butler twice, once as ManagerID 39 and once with the
+				    // ID left blank. Fill the blank with 39 so the two rows become one manager. The
+				    // same repair is applied to employee_fact, where 8 Production Technicians carry
+				    // no ManagerID.
+				    #"Replaced Value" = Table.ReplaceValue(#"Sorted Rows",null,39,Replacer.ReplaceValue,{"ManagerID"}),
+				    // managers.csv also lists Michael Albert twice, as ManagerID 22 and as 30.
+				    // Fold 30 into 22, which is the ID the rest of the data uses.
+				    #"Replaced Value1" = Table.ReplaceValue(#"Replaced Value",30,22,Replacer.ReplaceValue,{"ManagerID"}),
+				    #"Removed Duplicates" = Table.Distinct(#"Replaced Value1"),
+				    #"Sorted Rows1" = Table.Sort(#"Removed Duplicates",{{"ManagerID", Order.Ascending}}),
+				    // Replacing a null made the model store ManagerID as a decimal. Cast it back to a
+				    // whole number so it matches employee_fact[ManagerID] on both sides of the join.
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Sorted Rows1",{{"ManagerID", Int64.Type}})
+				in
+				    #"Changed Type1"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+
