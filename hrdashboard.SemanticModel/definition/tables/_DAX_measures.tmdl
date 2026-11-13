@@ -48,11 +48,10 @@ table _DAX_measures
 		displayFolder: Employee
 		lineageTag: ee5c2294-ec97-4ee7-bf58-a8c45172c26c
 
-	/// Average age of the active workforce, in whole years at 31 December 2018, rounded down.
+	/// Average age of the active workforce, in whole years at 31 December 2018, rounded to the nearest year.
 	measure EmployeeAgeAVG =
-			
 			CALCULATE(
-			    ROUNDDOWN(AVERAGE(employees[Age]), 0),
+			    ROUND(AVERAGE(employees[Age]), 0),
 			    KEEPFILTERS(employees[EmploymentStatus] = "Active")
 			)
 		formatString: #,0
@@ -166,29 +165,27 @@ table _DAX_measures
 		displayFolder: Employee
 		lineageTag: 1f60fd1e-2ed5-4f1d-980a-3cea552278a2
 
-	/// Headcount on the first day of the period, meaning hired on or before that day and not yet left.
+	/// Headcount on the first day of the period. Employed on a date means hired on or before that date and not terminated on or before it, the same test the closing headcount applies.
 	measure EmployeesCount_StartOfPeriod =
-			
 			VAR PeriodStart = MIN(DateTable[Date])
 			RETURN
 			    CALCULATE(
 			        DISTINCTCOUNT(employees[EmpID]),
 			        employees[DateofHire] <= PeriodStart,
-			        ISBLANK(employees[DateofTermination]) || employees[DateofTermination] >= PeriodStart
+			        ISBLANK(employees[DateofTermination]) || employees[DateofTermination] > PeriodStart
 			    )
 		formatString: #,0
 		displayFolder: Employee
 		lineageTag: f1bae8e6-ba29-416b-b686-0ecbd0e9b8bd
 
-	/// Headcount on the last day of the period, meaning hired before that day and not yet left.
+	/// Headcount on the last day of the period. Employed on a date means hired on or before that date and not terminated on or before it, the same test the opening headcount applies. Someone hired on the closing day counts, which keeps them from being subtracted as a hire without ever being counted as present.
 	measure EmployeesCount_EndOfPeriod =
-			
 			VAR PeriodEnd = MAX(DateTable[Date])
 			RETURN
 			    CALCULATE(
 			        DISTINCTCOUNT(employees[EmpID]),
-			        employees[DateofHire] < PeriodEnd,
-			        ISBLANK(employees[DateofTermination]) || employees[DateofTermination] >= PeriodEnd
+			        employees[DateofHire] <= PeriodEnd,
+			        ISBLANK(employees[DateofTermination]) || employees[DateofTermination] > PeriodEnd
 			    )
 		formatString: #,0
 		displayFolder: Employee

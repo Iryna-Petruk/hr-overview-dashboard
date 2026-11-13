@@ -648,7 +648,8 @@ The arithmetic is internally consistent. Two notes:
   Not wrong for a fixed dataset, but undocumented, and the reference year is an
   accident of `+ 365` rather than a decision.
 - `ROUNDDOWN` on an average truncates: 41.41 → 41. `ROUND` would be the
-  conventional choice. It happens not to change the answer here.
+  conventional choice. It happens not to change the answer here. (Changed to
+  `ROUND` later — see §8.)
 
 Age-band distribution, which confirms both the bucket logic and the empty bucket:
 
@@ -968,7 +969,7 @@ applied:
 | Employees count to **Active employees** | 206 | 206 |
 | Average salary to **Average salary (active)** | $68,437 | **$69,824** |
 | Min age of employees to **Min age (active)** | 28 | **26** |
-| Average age of employees to **Average age (active)** | 41 | **38** |
+| Average age of employees to **Average age (active)** | 41 | **39** |
 | Max age of employees to **Max age (active)** | 69 | **67** |
 
 Two knock-on effects, both intended:
@@ -1027,18 +1028,60 @@ denominator for the total is 104 leavers over 1,440.5 summed average headcount.
 - **Column filters instead of `FILTER(employees, …)`** in
   `EmployeesCount_StartOfPeriod` and `EndOfPeriod` and `EmployeesHiredPerPeriod`.
   Verified to return identical values.
-- **`<=` on the start-of-period boundary.** Under the old calendar this changed
-  exactly one cell — 2006 opening headcount, blank to 1. Under the new calendar
-  starting 1 January 2006 it changes **nothing**, because the first hire is
-  2006-01-09 and nobody is employed on or before 1 January 2006. Applied anyway
-  because it is correct; reported as a no-op rather than an improvement.
+- **One headcount definition** for both ends of the period — see below.
+- **`ROUND` instead of `ROUNDDOWN`** in `EmployeeAgeAVG`. The raw active average
+  is 38.65, so the card reads **39** rather than truncating to 38.
 - **`USERELATIONSHIP` arguments reordered** to `FromColumn, ToColumn` in nine
   measures. Identical in DAX, but the BPA rule's regex is order-sensitive and was
   otherwise reporting both date relationships as never activated.
 
-`EmployeesCount_EndOfPeriod` still uses `<` on its boundary, which is the same
-off-by-one in the other direction. It was outside the brief and changing it moves
-the rates, so it is left as a follow-up.
+### One headcount definition
+
+The opening and closing headcounts originally disagreed about their boundaries.
+`StartOfPeriod` used `hire < D` and `termination >= D`; `EndOfPeriod` used the
+same, so someone hired on the closing day was never counted as present. Both now
+apply a single test:
+
+> **Employed on date D** = hired on or before D, and not terminated on or
+> before D.
+
+```dax
+EmployeesCount_EndOfPeriod =
+VAR PeriodEnd = MAX(DateTable[Date])
+RETURN
+    CALCULATE(
+        DISTINCTCOUNT(employees[EmpID]),
+        employees[DateofHire] <= PeriodEnd,
+        ISBLANK(employees[DateofTermination]) || employees[DateofTermination] > PeriodEnd
+    )
+```
+
+**Nothing changes at the yearly grain.** Opening and closing headcount, turnover,
+retention and attrition are identical for all 13 years, maximum movement
+**0.00 pp**, because nobody in the data is hired or terminated on 1 January or
+31 December. The totals are also untouched: turnover 7.22%, attrition 6.11%,
+retention 92.22%, and the LYs cards at window 3 stay at 6.53% / 5.02% / 93.57%.
+
+**Monthly figures do move**, in 14 of the 156 months, because month boundaries
+are hit often: 6 people were terminated on the 1st of a month, 17 hired on a
+month-end and 4 terminated on a month-end. Every one of those moves is the same
+double-count being undone.
+
+The clearest case is **September 2013**, the largest movement at 5.84 pp. Nine
+people were hired on 30 September 2013:
+
+| | Was | Now |
+|---|---|---|
+| Opening headcount | 154 | 154 |
+| Closing headcount | 153 | **162** |
+| Hired during the month | 9 | 9 |
+| Retention `(closing − hired) ÷ opening` | `(153 − 9) ÷ 154` = **93.51%** | `(162 − 9) ÷ 154` = **99.35%** |
+
+The old closing headcount excluded those nine because `hire < 30 September` was
+false, yet `EmployeesHiredPerPeriod` still counted them as hires and subtracted
+them. They were penalised twice: absent from the closing count *and* deducted
+from it. Monthly retention was understated as a result, and the new definition
+removes the contradiction rather than introducing one.
 
 ### Implicit measures
 
@@ -1189,10 +1232,6 @@ Annotated, with the reason:
 
 ### Not done, and why
 
-- **`EmployeesCount_EndOfPeriod` boundary.** Still `<` where the opening
-  headcount now uses `<=`. Outside the brief, and changing it moves every rate.
-- **`ROUNDDOWN` on average age.** 38.77 still displays as 38 rather than 39.
-  Outside the brief; `ROUND` would be the conventional choice.
 - **`Photos` `Table.Skip(11)`.** Documented rather than replaced. Filtering on
   `ID <> null` would say the same thing and survive the workbook gaining rows.
 - **Table renaming, the star-schema collapse, the 108 interaction overrides, RLS
@@ -1202,4 +1241,15 @@ Annotated, with the reason:
 
 `git init`, with `*.pbix` added to the existing `.gitignore` — the PBIP folders
 are the source of truth, and committing the binary alongside its own serialised
-form defeats the point. First commit covers the whole project. No remote.
+form defeats the point. 289 files tracked. No remote.
+
+Identity is set **repo-local**, not global, to
+`Iryna-Petruk <125769579+Iryna-Petruk@users.noreply.github.com>`. The first
+commit was amended onto it and the pre-amend object purged with
+`git reflog expire --expire=now --all` followed by `git gc --prune=now`, because
+`--amend` leaves the old commit — and the address it carried — reachable in the
+reflog. A scan of every remaining commit object confirms none contains the
+previous address.
+
+Two commits: the project as reviewed and fixed, then the single-headcount
+definition and the `ROUND` change together.
