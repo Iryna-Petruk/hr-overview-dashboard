@@ -23,19 +23,45 @@ describes a real company or a real person.
 | `people_image_urls_and_ids.xlsx` | Avatar URLs, one per employee |
 | `REVIEW.md` | A code-review style assessment of the project and what was changed |
 
-## Refreshing
+## Run it locally
 
 Every query builds its file path from a single Power Query parameter,
 **`SourceFolder`**, which holds the folder containing the five CSVs and the
-workbook. After cloning, point it at your own copy:
+workbook. It is committed as a placeholder:
+
+```
+C:\path\to\hr-overview-dashboard
+```
+
+That is deliberately not a real path on anyone's machine. Power Query cannot
+resolve a path relative to the project, so the alternative would be committing
+an absolute path — which means committing whoever's user name happens to be in
+it. After cloning, point it at your own copy:
 
 1. Open `hrdashboard.pbip` in Power BI Desktop.
 2. **Home → Transform data → Edit parameters**.
-3. Set `SourceFolder` to the full path of this folder, with no trailing
-   backslash, for example `C:\projects\hrdashboard-portfolio`.
+3. Set `SourceFolder` to the full path of your clone, with no trailing
+   backslash, for example `C:\projects\hr-overview-dashboard`.
 4. **Home → Refresh**.
 
 That is the only change needed. Nothing else in the model hard-codes a path.
+
+Power BI writes the value you type into
+`hrdashboard.SemanticModel/definition/expressions.tmdl`, so it shows up as a
+modified file in `git status`. Either leave it uncommitted, or restore it before
+committing:
+
+```bash
+git restore "hrdashboard.SemanticModel/definition/expressions.tmdl"
+```
+
+To keep `git status` clean permanently, clone to a fixed short path and create a
+directory junction so the committed placeholder resolves on its own — no
+elevation needed, and nothing is copied:
+
+```bat
+mklink /J C:\path\to\hr-overview-dashboard "<path to your clone>"
+```
 
 Auto date/time is switched off for this file, so if you add date columns you get
 no hidden per-column calendars; use the `DateTable` below instead.

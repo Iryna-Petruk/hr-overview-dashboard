@@ -519,10 +519,10 @@ names them.)
 
 ### Tabular Editor BPA
 
-The rule file was **not** at the path given
-(`C:\Users\win10pro\project\steam-player-collector\bpa\BPARules.json` — that folder
-does not exist). It was found at
-**`C:\Users\win10pro\Downloads\project\bpa\BPARules.json`**: 68 rules, Microsoft's
+The rule file was **not** at the path given in the brief
+(a `steam-player-collector\bpa\BPARules.json` under a different folder — that
+folder does not exist). It was found at
+**`<project folder>\bpa\BPARules.json`**: 68 rules, Microsoft's
 Best Practice Rules minus three, belonging to the `CDPR_Health_Hub` project. That
 is the file used here. Tabular Editor 2.29.0 portable was found at
 `C:\Tools\TabularEditor2`.
@@ -530,7 +530,7 @@ is the file used here. Tabular Editor 2.29.0 portable was found at
 ```powershell
 C:\Tools\TabularEditor2\TabularEditor.exe `
   "hrdashboard.SemanticModel\definition\database.tmdl" `
-  -A "C:\Users\win10pro\Downloads\project\bpa\BPARules.json"
+  -A "<project folder>\bpa\BPARules.json"
 ```
 
 Read-only; it analysed the TMDL on disk and changed nothing.
@@ -1184,7 +1184,7 @@ aggregation.
 ### Best Practice Analyzer
 
 Same rule file as `CDPR_Health_Hub` (68 rules), found at
-`C:\Users\win10pro\Downloads\project\bpa\BPARules.json` — not the path in the
+`<project folder>\bpa\BPARules.json` — not the path in the
 original brief, which does not exist. Tabular Editor 2.29.0 from
 `C:\Tools\TabularEditor2`.
 

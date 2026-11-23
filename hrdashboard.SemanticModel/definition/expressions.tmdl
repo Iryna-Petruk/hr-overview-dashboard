@@ -1,5 +1,5 @@
 /// Folder holding the five CSV files and the avatar workbook that feed this model. Every query builds its file path from this parameter, so pointing it at your own copy of the project folder is the only change needed to refresh. No trailing backslash.
-expression SourceFolder = "C:\Users\win10pro\Downloads\hrdashboard-portfolio" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+expression SourceFolder = "C:\path\to\hr-overview-dashboard" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
 	lineageTag: 3a3ece62-7ad3-4f96-a3ec-2ed9bfc6dbb1
 
 	annotation PBI_ResultType = Text
